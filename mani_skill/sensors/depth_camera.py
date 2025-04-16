@@ -43,7 +43,9 @@ class StereoDepthCamera(Camera):
         renderer_type: str,
         articulation: physx.PhysxArticulation = None,
     ):
+        super().__init__(camera_config=camera_cfg, scene=scene)
         self.camera_cfg = camera_cfg
+        self.config = camera_cfg
         assert renderer_type == "sapien", renderer_type
         self.renderer_type = renderer_type
 
@@ -64,14 +66,13 @@ class StereoDepthCamera(Camera):
 
         # Add camera
         sensor_config = StereoDepthSensorConfig()
-        sensor_config.rgb_resolution = camera_cfg.rgb_resolution
-        sensor_config.rgb_intrinsic = camera_cfg.rgb_intrinsic
-        sensor_config.min_depth = camera_cfg.min_depth
+        #sensor_config.rgb_resolution = camera_cfg.rgb_resolution
+        #sensor_config.rgb_intrinsic = camera_cfg.rgb_intrinsic
+        #sensor_config.min_depth = camera_cfg.min_depth
         if self.actor is None:
-            self.camera = StereoDepthSensor(
-                camera_cfg.uid, scene, sensor_config, mount=self.actor
-            )
-            self.camera.set_pose(camera_cfg.pose)
+            self.camera = StereoDepthSensor(config=sensor_config, scene=scene.sub_scenes[0])
+            #camera_cfg.uid, scene, sensor_config, mount=self.actor)
+            #self.camera.set_local_pose(camera_cfg.pose)
         else:
             self.camera = StereoDepthSensor(
                 camera_cfg.uid,
@@ -82,7 +83,8 @@ class StereoDepthCamera(Camera):
             )
 
         # Filter texture names according to renderer type if necessary (legacy for Kuafu)
-        self.texture_names = camera_cfg.texture_names
+        #self.texture_names = camera_cfg.texture_names
+        self.texture_names = list(self.config.shader_config.texture_names.keys())
 
     def get_images(self, take_picture=False):
         """Get (raw) images from the camera."""

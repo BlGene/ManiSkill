@@ -120,7 +120,9 @@ def parse_camera_configs(camera_configs):
     elif isinstance(camera_configs, CameraConfig):
         return dict([(camera_configs.uid, camera_configs)])
     else:
-        raise TypeError(type(camera_configs))
+        print(f"Warning: {type(camera_configs)}")
+        return dict([(camera_configs.uid, camera_configs)])
+        #raise TypeError(type(camera_configs))
 
 
 class Camera(BaseSensor):
@@ -222,6 +224,7 @@ class Camera(BaseSensor):
         output_textures = self.camera.get_picture(required_texture_names)
         for texture_name, texture in zip(required_texture_names, output_textures):
             if apply_texture_transforms:
+                #print("YYY", texture_name, texture, self.config.shader_config.texture_transforms)
                 images_dict |= self.config.shader_config.texture_transforms[
                     texture_name
                 ](texture)
